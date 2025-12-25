@@ -1,5 +1,4 @@
 FILE_NAME = "students.txt"
-
 class Student:
     def __init__(self, name="", roll=0, cpi=0.0):
         self.name = name
@@ -12,31 +11,52 @@ class StudentManager:
         self.students = []
         self.load_from_file()
 
-
     def data_validation(self, roll, cpi, name):
         if roll <= 0:
             print("Invalid roll number.")
             return False
 
         if cpi < 0.0 or cpi > 10.0:
-            print("Invalid CPI.")
+            print("Invalid CPI. Must be between 0 and 10.")
             return False
 
         for ch in name:
-            if not (ch.isalpha() or ch == ' '):
-                print("Invalid name.")
+            if not (ch.isalpha() or ch == " "):
+                print("Invalid name. Only alphabets and spaces allowed.")
                 return False
 
         return True
-
 
     def load_from_file(self):
         try:
             with open(FILE_NAME, "r") as file:
                 for line in file:
-                    roll, name, cpi = line.strip().split("|")
-                    self.students.append(Student(name, int(roll), float(cpi)))
+                    line = line.strip()
+
+                    # Skip empty lines
+                    if not line:
+                        continue
+
+                    parts = line.split("|")
+
+                    # Validate format
+                    if len(parts) != 3:
+                        print(f"Skipping invalid line: {line}")
+                        continue
+
+                    roll, name, cpi = parts
+
+                    try:
+                        roll = int(roll)
+                        cpi = float(cpi)
+                    except ValueError:
+                        print(f"Invalid data in line: {line}")
+                        continue
+
+                    self.students.append(Student(name, roll, cpi))
+
         except FileNotFoundError:
+            # First run, file not created yet
             pass
 
     def save_to_file(self):
@@ -44,11 +64,14 @@ class StudentManager:
             for s in self.students:
                 file.write(f"{s.roll}|{s.name}|{s.cpi}\n")
 
-
     def add_student(self):
-        name = input("Enter name: ")
-        roll = int(input("Enter roll no: "))
-        cpi = float(input("Enter CGPA: "))
+        try:
+            name = input("Enter name: ")
+            roll = int(input("Enter roll no: "))
+            cpi = float(input("Enter CGPA: "))
+        except ValueError:
+            print("Invalid input. Roll must be integer and CGPA must be number.")
+            return
 
         if not self.data_validation(roll, cpi, name):
             return
@@ -60,29 +83,33 @@ class StudentManager:
 
         self.students.append(Student(name, roll, cpi))
         self.save_to_file()
-        print("Student added successfully")
+        print("Student added successfully.")
 
     def remove_student(self):
-        roll = int(input("Enter roll no to remove: "))
+        try:
+            roll = int(input("Enter roll no to remove: "))
+        except ValueError:
+            print("Invalid roll number.")
+            return
 
         for s in self.students:
             if s.roll == roll:
                 self.students.remove(s)
                 self.save_to_file()
-                print("Student removed successfully")
+                print("Student removed successfully.")
                 return
 
         print("Roll number doesn't exist.")
 
     def search_student(self):
-        name = input("Enter the name: ").lower()
+        name = input("Enter the name: ").strip().lower()
         found = False
 
         for s in self.students:
             if s.name.lower() == name:
-                print(f"\nName : {s.name}")
-                print(f"Roll : {s.roll}")
-                print(f"CPI  : {s.cpi:.2f}")
+                print("\nName :", s.name)
+                print("Roll :", s.roll)
+                print("CPI  :", f"{s.cpi:.2f}")
                 found = True
 
         if not found:
@@ -91,16 +118,23 @@ class StudentManager:
     def sort_students(self):
         self.students.sort(key=lambda s: s.name.lower())
         self.save_to_file()
-        print("Students sorted successfully")
+        print("Students sorted successfully.")
 
     def display_all(self):
+        if not self.students:
+            print("No student records found.")
+            return
+
         print("\n--- ALL STUDENTS ---")
+        print(f"{'Roll':<6} {'Name':<20} {'CPI'}")
+        print("-" * 35)
+
         for s in self.students:
-            print(f"{s.roll:<5} {s.name:<20} {s.cpi:.2f}")
+            print(f"{s.roll:<6} {s.name:<20} {s.cpi:.2f}")
 
 
     def menu(self):
-        while True:     
+        while True:
             print("\n--- STUDENT DATABASE MANAGEMENT SYSTEM ---")
             print("1. Add student")
             print("2. Remove student")
@@ -125,7 +159,7 @@ class StudentManager:
                 print("Exiting...")
                 break
             else:
-                print("Invalid choice. Please enter a number or 'exit'.")
+                print("Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":
