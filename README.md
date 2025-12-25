@@ -21,5 +21,5 @@ A simple system to manage student records, courses, and academic information eff
 
 1. Clone the repo:  
    ```bash
-   git clone https://github.com/DevGopi-17/student-management-system.git
+   git clone https://github.com/DevGopi-17/Student-Management-System.git
 
