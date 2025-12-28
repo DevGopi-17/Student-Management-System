@@ -1,5 +1,3 @@
-# [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=28&pause=1000&color=ECE5F7&width=435&lines=Student+Management+System)](https://git.io/typing-svg)
----
 # Student Management System (Tkinter GUI)
 
 A Python-based **Student Management System** with a modern **Tkinter GUI**.  
@@ -7,7 +5,7 @@ This application allows you to **add, remove, sort, search, and analyze student 
 
 ---
 
-## Features
+## [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&pause=1000&color=F70E24&width=435&lines=Features%3A)](https://git.io/typing-svg)
 
 ### Core Features
 - **Add Student**: Add new student records with Roll No, Name, and CGPA.
@@ -25,7 +23,7 @@ This application allows you to **add, remove, sort, search, and analyze student 
 
 ---
 
-## Technology Used
+## [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&pause=1000&color=1413F7&width=435&lines=Technology+Used%3A)](https://git.io/typing-svg)
 - **Python 3.x**
 - **Tkinter**: GUI framework (with `ttk` themed widgets)
 - **File Handling**: Saves student data in a local `students.txt` file
@@ -33,17 +31,15 @@ This application allows you to **add, remove, sort, search, and analyze student 
 
 ---
 
-## How to Run
-1. Clone or download the repository.
-2. Ensure Python 3.x is installed.
-3. Run the script:
-   ```bash
-   python main.py
-
-
-## [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=ECE5F7&width=435&lines=Installation)](https://git.io/typing-svg)
-
-1. Clone the repo:  
+## [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&pause=1000&color=13F742&width=435&lines=How+to+Run%3A)](https://git.io/typing-svg)
+1. Clone or download the repository.  
    ```bash
    git clone https://github.com/DevGopi-17/Student-Management-System.git
-
+   
+3. Ensure Python 3.x is installed.
+4. Run the script:
+   ```bash
+   python3 main.py
+OR
+   ```bash
+   python main.py
