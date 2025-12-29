@@ -10,6 +10,7 @@ This application allows you to **add, remove, sort, search, and analyze student 
 ### Core Features
 - **Add Student**: Add new student records with Roll No, Name, and CGPA.
 - **Remove Student**: Delete student records by selecting them from the table.
+- **Search Mode Selector**: Search students by Name/Rollno
 - **Sort By Name**: Sort all students alphabetically by name.
 - **Display All**: View all student records in a structured table.
 - **Double-click Details**: Double-click any student row to view detailed info.
