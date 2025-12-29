@@ -4,6 +4,7 @@ from tkinter import ttk, messagebox
 FILE_NAME = "students.txt"
 
 
+#DATA LAYER 
 class Student:
     def __init__(self, name, roll, cgpa):
         self.name = name
@@ -31,12 +32,15 @@ class StudentManager:
                 f.write(f"{s.roll}|{s.name}|{s.cgpa}\n")
 
     def add_student(self, name, roll, cgpa):
+        if not name.strip():
+            return "Name cannot be empty"
         if roll <= 0:
             return "Invalid roll number"
         if not (0 <= cgpa <= 10):
             return "CGPA must be between 0 and 10"
         if any(s.roll == roll for s in self.students):
             return "Roll already exists"
+
         self.students.append(Student(name, roll, cgpa))
         self.save_to_file()
         return "Student added successfully"
@@ -56,9 +60,8 @@ class StudentGUI:
         self.manager = StudentManager()
         self.root = root
         self.root.title("Student Management System")
-        self.root.geometry("800x500")
+        self.root.geometry("850x520")
 
-        # Themed widgets
         style = ttk.Style()
         style.theme_use("clam")
 
@@ -70,7 +73,7 @@ class StudentGUI:
         main.pack(expand=True, fill="both")
 
         main.columnconfigure(1, weight=1)
-        main.rowconfigure(7, weight=1)
+        main.rowconfigure(8, weight=1)
 
         ttk.Label(
             main,
@@ -87,30 +90,35 @@ class StudentGUI:
         self.roll_var = tk.IntVar()
         self.cgpa_var = tk.DoubleVar()
 
-        ttk.Entry(main, textvariable=self.name_var).grid(
-            row=1, column=1, sticky="ew", padx=5
-        )
-        ttk.Entry(main, textvariable=self.roll_var).grid(
-            row=2, column=1, sticky="ew", padx=5
-        )
-        ttk.Entry(main, textvariable=self.cgpa_var).grid(
-            row=3, column=1, sticky="ew", padx=5
-        )
+        ttk.Entry(main, textvariable=self.name_var).grid(row=1, column=1, sticky="ew", padx=5)
+        ttk.Entry(main, textvariable=self.roll_var).grid(row=2, column=1, sticky="ew", padx=5)
+        ttk.Entry(main, textvariable=self.cgpa_var).grid(row=3, column=1, sticky="ew", padx=5)
 
-        #BUTTONS
+        #BUTTONS 
         ttk.Button(main, text="Add Student", command=self.add_student).grid(row=4, column=0, pady=5)
         ttk.Button(main, text="Remove Student", command=self.remove_student).grid(row=4, column=1, pady=5)
         ttk.Button(main, text="Sort By Name", command=self.sort_students).grid(row=4, column=2, pady=5)
         ttk.Button(main, text="Show Statistics", command=self.show_statistics).grid(row=4, column=3, padx=5)
 
-        #LIVE SEARCH  
-        ttk.Label(main, text="Live Search").grid(row=5, column=0, sticky="w")
+        #SEARCH OPTIONS 
+        ttk.Label(main, text="Search By").grid(row=5, column=0, sticky="w")
+
+        self.search_mode = tk.StringVar(value="Roll")
+        search_mode_box = ttk.Combobox(
+            main,
+            textvariable=self.search_mode,
+            values=["Roll", "Name"],
+            state="readonly",
+            width=10
+        )
+        search_mode_box.grid(row=5, column=1, sticky="w", padx=5)
+
         self.search_var = tk.StringVar()
         search_entry = ttk.Entry(main, textvariable=self.search_var)
-        search_entry.grid(row=5, column=1, sticky="ew", padx=5)
+        search_entry.grid(row=5, column=2, sticky="ew", padx=5)
         search_entry.bind("<KeyRelease>", self.live_search)
 
-        #TABLE (Treeview)
+        #TABLE 
         columns = ("Roll", "Name", "CGPA")
         self.tree = ttk.Treeview(main, columns=columns, show="headings")
 
@@ -121,18 +129,15 @@ class StudentGUI:
         scrollbar = ttk.Scrollbar(main, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
 
-        self.tree.grid(row=7, column=0, columnspan=4, sticky="nsew", pady=10)
-        scrollbar.grid(row=7, column=4, sticky="ns")
+        self.tree.grid(row=8, column=0, columnspan=4, sticky="nsew", pady=10)
+        scrollbar.grid(row=8, column=4, sticky="ns")
 
-        #EVENT BINDING 
         self.root.bind("<Return>", lambda e: self.add_student())
         self.tree.bind("<Double-1>", self.show_details)
 
     #FUNCTIONS 
     def refresh_table(self, data=None):
-        for row in self.tree.get_children():
-            self.tree.delete(row)
-
+        self.tree.delete(*self.tree.get_children())
         students = data if data is not None else self.manager.students
         for s in students:
             self.tree.insert("", "end", values=(s.roll, s.name, f"{s.cgpa:.2f}"))
@@ -165,13 +170,26 @@ class StudentGUI:
         self.manager.save_to_file()
         self.refresh_table()
 
-    #LIVE SEARCH  
+    #LIVE SEARCH(ROLL / NAME)
     def live_search(self, event):
-        query = self.search_var.get().lower()
-        filtered = [s for s in self.manager.students if query in s.name.lower()]
+        query = self.search_var.get().strip().lower()
+        mode = self.search_mode.get()
+
+        if not query:
+            self.refresh_table()
+            return
+
+        if mode == "Roll":
+            if not query.isdigit():
+                self.refresh_table([])
+                return
+            filtered = [s for s in self.manager.students if str(s.roll).startswith(query)]
+
+        else:  # Name
+            filtered = [s for s in self.manager.students if query in s.name.lower()]
+
         self.refresh_table(filtered)
 
-    #STATISTICS PANEL 
     def show_statistics(self):
         if not self.manager.students:
             messagebox.showinfo("Statistics", "No student data available")
@@ -188,7 +206,6 @@ class StudentGUI:
             f"Topper: {topper.name} ({topper.cgpa})"
         )
 
-    #DOUBLE CLICK SHOW DETAILS
     def show_details(self, event):
         item = self.tree.selection()[0]
         roll, name, cgpa = self.tree.item(item)["values"]
