@@ -3,8 +3,6 @@ from tkinter import ttk, messagebox
 
 FILE_NAME = "students.txt"
 
-
-#DATA LAYER 
 class Student:
     def __init__(self, name, roll, cgpa):
         self.name = name
